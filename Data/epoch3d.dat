@@ -1,0 +1,9 @@
+ EPOCH3D v4.19.4   v4.19.4-0-g95eff865-clean 1730621843.684            
+
+ Loaded 8000 particles of species "electron_s"
+ Loaded 8000 particles of species "Carbon"
+ No particles specified for species "photon"
+Wrote track  ,      track0000.sdf at time  0.6779E-14 and iteration      44
+Wrote track  ,      track0001.sdf at time  0.1340E-13 and iteration      87
+Wrote track  ,      track0002.sdf at time  0.2003E-13 and iteration     130
+Wrote track  ,      track0003.sdf at time  0.2681E-13 and iteration     174

@@ -1,0 +1,460 @@
+ EPOCH3D v4.19.4   v4.19.4-0-g95eff865-clean 1730621843.684            
+
+Deck state:  1
+
+ Beginning "constant" block
+
+ 	Element laser_lamada=1.0*micron handled OK
+ 	Element laser_omega=2.0*pi*c/laser_lamada handled OK
+ 	Element laser_period=laser_lamada/c handled OK
+ 	Element x_m=2*micron handled OK
+ 	Element laser_k=2*pi/laser_lamada handled OK
+ 	Element w0=2.27*micron handled OK
+ 	Element rayleigh_length=pi*w0^2/laser_lamada handled OK
+ 	Element wz=w0*sqrt(1+(x_m/rayleigh_length)^2) handled OK
+ 	Element radius_curv=x_m*(1.0+(rayleigh_length/x_m)^2) handled OK
+ 	Element a0=650.0 handled OK
+ 	Element Intensity=(1.37*10^18)*a0^2/((laser_lamada^2)*10^12) handled OK
+ 	Element n_critic=1.1*10^27/((laser_lamada^2)*10^12) handled OK
+ 	Element laser_duration=6*laser_period handled OK
+ 	Element target_thick=2*1e-6 handled OK
+ 	Element target_ne=5*n_critic handled OK
+
+ Ending "constant" block
+
+ Beginning "control" block
+
+ 	Element nx=nint((target_thick/1e-6+4)*10) handled OK
+ 	Element ny=100 handled OK
+ 	Element nz=100 handled OK
+ 	Element t_end=8*laser_period handled OK
+ 	Element x_min=-1.0*laser_lamada handled OK
+ 	Element x_max=target_thick+3*laser_lamada handled OK
+ 	Element y_min=-5*laser_lamada handled OK
+ 	Element y_max=5*laser_lamada handled OK
+ 	Element z_min=-5*laser_lamada handled OK
+ 	Element z_max=5*laser_lamada handled OK
+ 	Element dt_multiplier=0.8 handled OK
+ 	Element stdout_frequency=100 handled OK
+ 	Element dlb_threshold=0.6 handled OK
+
+ Ending "control" block
+
+ Beginning "boundaries" block
+
+ 	Element bc_x_min=simple_laser handled OK
+ 	Element bc_x_max=simple_outflow handled OK
+ 	Element bc_y_min=simple_outflow handled OK
+ 	Element bc_y_max=simple_outflow handled OK
+ 	Element bc_z_min=simple_outflow handled OK
+ 	Element bc_z_max=simple_outflow handled OK
+
+ Ending "boundaries" block
+
+ Beginning "species" block
+
+ 	Element name=electron_s handled OK
+ 	Element charge=-1.0 handled OK
+ 	Element mass=1.0 handled OK
+ 	Element npart_per_cell=1 handled OK
+ 	Element density=if( (x gt 0*1e-6) and (x lt target_thick) and (abs(y) lt 1e-6) and (abs(z) lt 1e-6), target_ne, 0 ) handled OK
+ 	Element temp_ev=1e3 handled OK
+ 	Element dumpmask=always handled OK
+ 	Element identify=electron handled OK
+
+ Ending "species" block
+
+ Beginning "species" block
+
+ 	Element name=Carbon handled OK
+ 	Element charge=6.0 handled OK
+ 	Element mass=12.0*1836.0 handled OK
+ 	Element npart_per_cell=1 handled OK
+ 	Element density=density(electron_s)/6.0 handled OK
+ 	Element temp_ev=1e3 handled OK
+ 	Element dumpmask=always handled OK
+
+ Ending "species" block
+
+ Beginning "species" block
+
+ 	Element name=photon handled OK
+ 	Element charge=0.0 handled OK
+ 	Element mass=0.0 handled OK
+ 	Element density=0.0 handled OK
+ 	Element dumpmask=always handled OK
+ 	Element identify=photon handled OK
+
+ Ending "species" block
+
+ Beginning "subset" block
+
+ 	Element name=trace_e handled OK
+ 	Element include_species=electron_s handled OK
+ 	Element gamma_min=200 handled OK
+ 	Element random_fraction=0.1 handled OK
+
+ Ending "subset" block
+
+ Beginning "qed" block
+
+ 	Element use_qed=T handled OK
+ 	Element qed_start_time=0.0*laser_period handled OK
+ 	Element produce_photons=T handled OK
+ 	Element photon_dynamics=F handled OK
+ 	Element use_radiation_reaction=T handled OK
+ 	Element photon_energy_min=999999999.99999 handled OK
+ 	Element produce_pairs=F handled OK
+
+ Ending "qed" block
+
+ Beginning "laser" block
+
+ 	Element boundary=x_min handled OK
+ 	Element intensity_w_cm2=Intensity*w0/wz handled OK
+ 	Element lambda=laser_lamada handled OK
+ 	Element profile=gauss(y,0,wz) handled OK
+ 	Element t_profile=(sin(pi*time/laser_duration))^2 handled OK
+ 	Element pol_angle=0.0 handled OK
+ 	Element phase=0.5*pi-(-laser_k*x_m-laser_k*(y^2)/(2*radius_curv)+0.5*atan(x_m/rayleigh_length)) handled OK
+ 	Element t_start=0.0 handled OK
+ 	Element t_end=laser_duration handled OK
+
+ Ending "laser" block
+
+ Beginning "output" block
+
+ 	Element disabled=T handled OK
+ 	Element name=fields handled OK
+ 	Element file_prefix=fields handled OK
+ 	Element dt_snapshot=2*laser_period handled OK
+ 	Element dt_average=2*laser_period handled OK
+ 	Element dump_first=F handled OK
+ 	Element ex=always + single + average + snapshot handled OK
+ 	Element ey=always + single + average + snapshot handled OK
+ 	Element bz=always + single + average + snapshot handled OK
+ 	Element time_start=0.0*laser_period handled OK
+
+ Ending "output" block
+
+ Beginning "output" block
+
+ 	Element disabled=T handled OK
+ 	Element name=current handled OK
+ 	Element file_prefix=current handled OK
+ 	Element dt_snapshot=2*laser_period handled OK
+ 	Element dt_average=2*laser_period handled OK
+ 	Element dump_first=F handled OK
+ 	Element jx=always + single + average + snapshot handled OK
+ 	Element jy=always + single + average + snapshot handled OK
+ 	Element time_start=0.0*laser_period handled OK
+
+ Ending "output" block
+
+ Beginning "output" block
+
+ 	Element disabled=T handled OK
+ 	Element name=density handled OK
+ 	Element file_prefix=density handled OK
+ 	Element dt_snapshot=2*laser_period handled OK
+ 	Element dt_average=2*laser_period handled OK
+ 	Element dump_first=F handled OK
+ 	Element number_density=always + single + species + no_sum handled OK
+ 	Element time_start=0.0*laser_period handled OK
+
+ Ending "output" block
+
+ Beginning "output" block
+
+ 	Element disabled=T handled OK
+ 	Element name=ekbar handled OK
+ 	Element file_prefix=ekbar handled OK
+ 	Element dump_first=F handled OK
+ 	Element dt_snapshot=2*laser_period handled OK
+ 	Element dt_average=2*laser_period handled OK
+ 	Element ekbar=always + species + single + no_sum handled OK
+ 	Element time_start=0*laser_period handled OK
+
+ Ending "output" block
+
+ Beginning "output" block
+
+ 	Element disabled=T handled OK
+ 	Element name=abs handled OK
+ 	Element file_prefix=abs handled OK
+ 	Element dt_snapshot=2*laser_period handled OK
+ 	Element dt_average=2*laser_period handled OK
+ 	Element dump_first=F handled OK
+ 	Element absorption=always + single handled OK
+ 	Element total_energy_sum=always + single handled OK
+ 	Element time_start=0*laser_period handled OK
+
+ Ending "output" block
+
+ Beginning "output" block
+
+ 	Element disabled=F handled OK
+ 	Element name=track handled OK
+ 	Element file_prefix=track handled OK
+ 	Element dt_snapshot=2*laser_period handled OK
+ 	Element dt_average=2*laser_period handled OK
+ 	Element dump_first=F handled OK
+ 	Element particle_grid=trace_e + single handled OK
+ 	Element id=trace_e handled OK
+ 	Element particle_weight=trace_e + single handled OK
+ 	Element particle_eta=trace_e + single handled OK
+ 	Element particle_radt=trace_e + single handled OK
+ 	Element particle_radn=trace_e + single handled OK
+ 	Element px=trace_e + single handled OK
+ 	Element py=trace_e + single handled OK
+ 	Element sx=trace_e + single handled OK
+ 	Element sy=trace_e + single handled OK
+ 	Element sz=trace_e + single handled OK
+ 	Element part_ex=trace_e + single handled OK
+ 	Element part_ey=trace_e + single handled OK
+ 	Element part_bz=trace_e + single handled OK
+ 	Element work_x_total=trace_e + single handled OK
+ 	Element work_y_total=trace_e + single handled OK
+ 	Element time_start=0*laser_period handled OK
+
+ Ending "output" block
+
+Deck state:  2
+
+ Beginning "constant" block
+
+ 	Element laser_lamada=1.0*micron handled OK
+ 	Element laser_omega=2.0*pi*c/laser_lamada handled OK
+ 	Element laser_period=laser_lamada/c handled OK
+ 	Element x_m=2*micron handled OK
+ 	Element laser_k=2*pi/laser_lamada handled OK
+ 	Element w0=2.27*micron handled OK
+ 	Element rayleigh_length=pi*w0^2/laser_lamada handled OK
+ 	Element wz=w0*sqrt(1+(x_m/rayleigh_length)^2) handled OK
+ 	Element radius_curv=x_m*(1.0+(rayleigh_length/x_m)^2) handled OK
+ 	Element a0=650.0 handled OK
+ 	Element Intensity=(1.37*10^18)*a0^2/((laser_lamada^2)*10^12) handled OK
+ 	Element n_critic=1.1*10^27/((laser_lamada^2)*10^12) handled OK
+ 	Element laser_duration=6*laser_period handled OK
+ 	Element target_thick=2*1e-6 handled OK
+ 	Element target_ne=5*n_critic handled OK
+
+ Ending "constant" block
+
+ Beginning "control" block
+
+ 	Element nx=nint((target_thick/1e-6+4)*10) handled OK
+ 	Element ny=100 handled OK
+ 	Element nz=100 handled OK
+ 	Element t_end=8*laser_period handled OK
+ 	Element x_min=-1.0*laser_lamada handled OK
+ 	Element x_max=target_thick+3*laser_lamada handled OK
+ 	Element y_min=-5*laser_lamada handled OK
+ 	Element y_max=5*laser_lamada handled OK
+ 	Element z_min=-5*laser_lamada handled OK
+ 	Element z_max=5*laser_lamada handled OK
+ 	Element dt_multiplier=0.8 handled OK
+ 	Element stdout_frequency=100 handled OK
+ 	Element dlb_threshold=0.6 handled OK
+
+ Ending "control" block
+
+ Beginning "boundaries" block
+
+ 	Element bc_x_min=simple_laser handled OK
+ 	Element bc_x_max=simple_outflow handled OK
+ 	Element bc_y_min=simple_outflow handled OK
+ 	Element bc_y_max=simple_outflow handled OK
+ 	Element bc_z_min=simple_outflow handled OK
+ 	Element bc_z_max=simple_outflow handled OK
+
+ Ending "boundaries" block
+
+ Beginning "species" block
+
+ 	Element name=electron_s handled OK
+ 	Element charge=-1.0 handled OK
+ 	Element mass=1.0 handled OK
+ 	Element npart_per_cell=1 handled OK
+ 	Element density=if( (x gt 0*1e-6) and (x lt target_thick) and (abs(y) lt 1e-6) and (abs(z) lt 1e-6), target_ne, 0 ) handled OK
+ 	Element temp_ev=1e3 handled OK
+ 	Element dumpmask=always handled OK
+ 	Element identify=electron handled OK
+
+ Ending "species" block
+
+ Beginning "species" block
+
+ 	Element name=Carbon handled OK
+ 	Element charge=6.0 handled OK
+ 	Element mass=12.0*1836.0 handled OK
+ 	Element npart_per_cell=1 handled OK
+ 	Element density=density(electron_s)/6.0 handled OK
+ 	Element temp_ev=1e3 handled OK
+ 	Element dumpmask=always handled OK
+
+ Ending "species" block
+
+ Beginning "species" block
+
+ 	Element name=photon handled OK
+ 	Element charge=0.0 handled OK
+ 	Element mass=0.0 handled OK
+ 	Element density=0.0 handled OK
+ 	Element dumpmask=always handled OK
+ 	Element identify=photon handled OK
+
+ Ending "species" block
+
+ Beginning "subset" block
+
+ 	Element name=trace_e handled OK
+ 	Element include_species=electron_s handled OK
+ 	Element gamma_min=200 handled OK
+ 	Element random_fraction=0.1 handled OK
+
+ Ending "subset" block
+
+ Beginning "qed" block
+
+ 	Element use_qed=T handled OK
+ 	Element qed_start_time=0.0*laser_period handled OK
+ 	Element produce_photons=T handled OK
+ 	Element photon_dynamics=F handled OK
+ 	Element use_radiation_reaction=T handled OK
+ 	Element photon_energy_min=999999999.99999 handled OK
+ 	Element produce_pairs=F handled OK
+
+ Ending "qed" block
+
+ Beginning "laser" block
+
+ 	Element boundary=x_min handled OK
+ 	Element intensity_w_cm2=Intensity*w0/wz handled OK
+ 	Element lambda=laser_lamada handled OK
+ 	Element profile=gauss(y,0,wz) handled OK
+ 	Element t_profile=(sin(pi*time/laser_duration))^2 handled OK
+ 	Element pol_angle=0.0 handled OK
+ 	Element phase=0.5*pi-(-laser_k*x_m-laser_k*(y^2)/(2*radius_curv)+0.5*atan(x_m/rayleigh_length)) handled OK
+ 	Element t_start=0.0 handled OK
+ 	Element t_end=laser_duration handled OK
+
+ Ending "laser" block
+
+ Beginning "output" block
+
+ 	Element disabled=T handled OK
+ 	Element name=fields handled OK
+ 	Element file_prefix=fields handled OK
+ 	Element dt_snapshot=2*laser_period handled OK
+ 	Element dt_average=2*laser_period handled OK
+ 	Element dump_first=F handled OK
+ 	Element ex=always + single + average + snapshot handled OK
+ 	Element ey=always + single + average + snapshot handled OK
+ 	Element bz=always + single + average + snapshot handled OK
+ 	Element time_start=0.0*laser_period handled OK
+
+ Ending "output" block
+
+ Beginning "output" block
+
+ 	Element disabled=T handled OK
+ 	Element name=current handled OK
+ 	Element file_prefix=current handled OK
+ 	Element dt_snapshot=2*laser_period handled OK
+ 	Element dt_average=2*laser_period handled OK
+ 	Element dump_first=F handled OK
+ 	Element jx=always + single + average + snapshot handled OK
+ 	Element jy=always + single + average + snapshot handled OK
+ 	Element time_start=0.0*laser_period handled OK
+
+ Ending "output" block
+
+ Beginning "output" block
+
+ 	Element disabled=T handled OK
+ 	Element name=density handled OK
+ 	Element file_prefix=density handled OK
+ 	Element dt_snapshot=2*laser_period handled OK
+ 	Element dt_average=2*laser_period handled OK
+ 	Element dump_first=F handled OK
+ 	Element number_density=always + single + species + no_sum handled OK
+ 	Element time_start=0.0*laser_period handled OK
+
+ Ending "output" block
+
+ Beginning "output" block
+
+ 	Element disabled=T handled OK
+ 	Element name=ekbar handled OK
+ 	Element file_prefix=ekbar handled OK
+ 	Element dump_first=F handled OK
+ 	Element dt_snapshot=2*laser_period handled OK
+ 	Element dt_average=2*laser_period handled OK
+ 	Element ekbar=always + species + single + no_sum handled OK
+ 	Element time_start=0*laser_period handled OK
+
+ Ending "output" block
+
+ Beginning "output" block
+
+ 	Element disabled=T handled OK
+ 	Element name=abs handled OK
+ 	Element file_prefix=abs handled OK
+ 	Element dt_snapshot=2*laser_period handled OK
+ 	Element dt_average=2*laser_period handled OK
+ 	Element dump_first=F handled OK
+ 	Element absorption=always + single handled OK
+ 	Element total_energy_sum=always + single handled OK
+ 	Element time_start=0*laser_period handled OK
+
+ Ending "output" block
+
+ Beginning "output" block
+
+ 	Element disabled=F handled OK
+ 	Element name=track handled OK
+ 	Element file_prefix=track handled OK
+ 	Element dt_snapshot=2*laser_period handled OK
+ 	Element dt_average=2*laser_period handled OK
+ 	Element dump_first=F handled OK
+ 	Element particle_grid=trace_e + single handled OK
+ 	Element id=trace_e handled OK
+ 	Element particle_weight=trace_e + single handled OK
+ 	Element particle_eta=trace_e + single handled OK
+ 	Element particle_radt=trace_e + single handled OK
+ 	Element particle_radn=trace_e + single handled OK
+ 	Element px=trace_e + single handled OK
+ 	Element py=trace_e + single handled OK
+
+ *** WARNING ***
+ Input deck line number 223
+ Unrecognised element "sx" in input deck.
+ Code will continue to run, but behaviour is undefined
+
+
+ *** WARNING ***
+ Input deck line number 224
+ Unrecognised element "sy" in input deck.
+ Code will continue to run, but behaviour is undefined
+
+
+ *** WARNING ***
+ Input deck line number 225
+ Unrecognised element "sz" in input deck.
+ Code will continue to run, but behaviour is undefined
+
+ 	Element part_ex=trace_e + single handled OK
+ 	Element part_ey=trace_e + single handled OK
+ 	Element part_bz=trace_e + single handled OK
+ 	Element work_x_total=trace_e + single handled OK
+ 	Element work_y_total=trace_e + single handled OK
+ 	Element time_start=0*laser_period handled OK
+
+ Ending "output" block
+
+ *** WARNING ***
+ Input deck line number 233
+ Block "output" contains errors
+
+ Initial conditions complete and valid.
