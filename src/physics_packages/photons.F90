@@ -625,7 +625,7 @@ CONTAINS
     REAL(num) :: hsokolov
 
     hsokolov = find_value_from_table_1d(eta, n_sample_h, log_hsokolov(:,1), &
-        log_hsokolov(:,2))
+        log_hsokolov(:,2), 'delta_optical_depth')
 
     delta_optical_depth = dt * eta * alpha_f * SQRT(3.0_num) * hsokolov &
         / (2.0_num * pi * tau_c * gamma_rel)
@@ -642,7 +642,7 @@ CONTAINS
     REAL(num) :: omegahat
 
     omegahat = find_value_from_table_1d(eta, n_sample_t, log_omegahat(:,1), &
-        log_omegahat(:,2))
+        log_omegahat(:,2), 'delta_optical_depth_tri')
 
     delta_optical_depth_tri = dt * eta * alpha_f**2 * 0.64_num * omegahat &
         / (2.0_num * pi * tau_c * gamma_rel)
@@ -659,7 +659,7 @@ CONTAINS
     REAL(num) :: tpair
 
     tpair = find_value_from_table_1d(chi_val, n_sample_t, log_tpair(:,1), &
-        log_tpair(:,2))
+        log_tpair(:,2), 'delta_optical_depth_photon')
 
     delta_optical_depth_photon = dt / tau_c * alpha_f / part_e * chi_val * tpair
 
@@ -949,7 +949,7 @@ CONTAINS
 
     samp_photon = .TRUE.
     IF (photon_sample_fraction < 1.0_num) THEN
-      samp_photon = random() < photon_sample_fraction    
+      samp_photon = random() < photon_sample_fraction
     END IF
 
     ! This will only create photons that have energies above a user specified
@@ -972,7 +972,7 @@ CONTAINS
       IF (use_continuous_emission) THEN
         ! Calculate photon weight from synchrotron emission rate
         sync_rate = delta_optical_depth(eta, generating_gamma) ! This already has *dt included
-        new_photon%weight = generating_electron%weight * sync_rate & 
+        new_photon%weight = generating_electron%weight * sync_rate &
                                                        / photon_sample_fraction
       ELSE
         new_photon%weight = generating_electron%weight / photon_sample_fraction
@@ -990,17 +990,17 @@ CONTAINS
 
     REAL(num) :: calculate_photon_energy
     REAL(num), INTENT(IN) :: rand_seed, eta, generating_gamma
-    REAL(num) :: eta_min, chi_tmp, chi_final  
+    REAL(num) :: eta_min, chi_tmp, chi_final
 
     eta_min = 10.0_num**MINVAL(log_eta)
     ! In the classical case, always use the spectrum at minimum eta
     IF (use_classical_emission .OR. (eta < eta_min)) THEN ! Extrapolate downwards with chi \propto eta^2
       chi_tmp = find_value_from_table_alt(eta_min, rand_seed, &
-          n_sample_eta, n_sample_chi, log_eta, log_chi, p_photon_energy)
+          n_sample_eta, n_sample_chi, log_eta, log_chi, p_photon_energy, 'calculate_photon_energy')
       chi_final = chi_tmp * (eta / eta_min)**2
     ELSE
       chi_final = find_value_from_table_alt(eta, rand_seed, &
-          n_sample_eta, n_sample_chi, log_eta, log_chi, p_photon_energy)
+          n_sample_eta, n_sample_chi, log_eta, log_chi, p_photon_energy, 'calculate_photon_energy')
     END IF
 
     calculate_photon_energy = (2.0_num * chi_final / eta) * generating_gamma &
@@ -1038,7 +1038,7 @@ CONTAINS
     probability_split = random()
 
     epsilon_frac = find_value_from_table(chi_val, probability_split, &
-        n_sample_chi2, n_sample_epsilon, log_chi2, epsilon_split, p_energy)
+        n_sample_chi2, n_sample_epsilon, log_chi2, epsilon_split, p_energy, 'generate_pair')
 
     mag_p = MAX(generating_photon%particle_energy / c, c_tiny)
 
@@ -1112,12 +1112,14 @@ CONTAINS
 
 
 
-  FUNCTION find_value_from_table_1d(x_in, nx, x, values)
+  !FUNCTION find_value_from_table_1d(x_in, nx, x, values)
+  FUNCTION find_value_from_table_1d(x_in, nx, x, values, caller_name)
 
     REAL(num) :: find_value_from_table_1d
     REAL(num), INTENT(IN) :: x_in
     INTEGER, INTENT(IN) :: nx
     REAL(num), INTENT(IN) :: x(nx), values(nx)
+    CHARACTER(*), INTENT(IN), OPTIONAL :: caller_name
     REAL(num) :: fx, x_value, value_interp, xdif1, xdif2, xdifm
     INTEGER :: i1, i2, im
     LOGICAL, SAVE :: warning = .TRUE.
@@ -1148,6 +1150,9 @@ CONTAINS
         PRINT*,'*** WARNING ***'
         PRINT*,'Argument to "find_value_from_table_1d" outside the range ', &
             'of the table.'
+        IF (PRESENT(caller_name)) THEN
+            PRINT*,'Called from function: ', TRIM(caller_name)
+        END IF
         PRINT*,'Using truncated value. No more warnings will be issued.'
         warning = .FALSE.
       END IF
@@ -1166,12 +1171,14 @@ CONTAINS
 
 
 
-  FUNCTION find_value_from_table_alt(x_in, p_value, nx, ny, x, y, p_table)
+  !FUNCTION find_value_from_table_alt(x_in, p_value, nx, ny, x, y, p_table)
+  FUNCTION find_value_from_table_alt(x_in, p_value, nx, ny, x, y, p_table, caller_name)
 
     REAL(num) :: find_value_from_table_alt
     REAL(num), INTENT(IN) :: x_in, p_value
     INTEGER, INTENT(IN) :: nx, ny
     REAL(num), INTENT(IN) :: x(nx), y(nx,ny), p_table(nx,ny)
+    CHARACTER(*), INTENT(IN), OPTIONAL :: caller_name
     INTEGER :: ix, index_lt, index_gt, i1, i2, im
     REAL(num) :: fx, fp, y_lt, y_gt, x_value, y_interp, xdif1, xdif2, xdifm
     LOGICAL, SAVE :: warning = .TRUE.
@@ -1203,6 +1210,9 @@ CONTAINS
         PRINT*,'*** WARNING ***'
         PRINT*,'Argument to "find_value_from_table_alt" outside the range ', &
             'of the table.'
+        IF (PRESENT(caller_name)) THEN
+            PRINT*,'Called from function: ', TRIM(caller_name)
+        END IF
         PRINT*,'Using truncated value. No more warnings will be issued.'
         warning = .FALSE.
       END IF
@@ -1242,6 +1252,9 @@ CONTAINS
         PRINT*,'*** WARNING ***'
         PRINT*,'Argument to "find_value_from_table_alt" outside the range ', &
             'of the table.'
+        IF (PRESENT(caller_name)) THEN
+            PRINT*,'Called from function: ', TRIM(caller_name)
+        END IF
         PRINT*,'Using truncated value. No more warnings will be issued.'
         warning = .FALSE.
       END IF
@@ -1280,6 +1293,9 @@ CONTAINS
         PRINT*,'*** WARNING ***'
         PRINT*,'Argument to "find_value_from_table_alt" outside the range ', &
             'of the table.'
+        IF (PRESENT(caller_name)) THEN
+            PRINT*,'Called from function: ', TRIM(caller_name)
+        END IF
         PRINT*,'Using truncated value. No more warnings will be issued.'
         warning = .FALSE.
       END IF
@@ -1302,12 +1318,14 @@ CONTAINS
 
 
 
-  FUNCTION find_value_from_table(x_in, p_value, nx, ny, x, y, p_table)
+  !FUNCTION find_value_from_table(x_in, p_value, nx, ny, x, y, p_table)
+  FUNCTION find_value_from_table(x_in, p_value, nx, ny, x, y, p_table, caller_name)
 
     REAL(num) :: find_value_from_table
     REAL(num), INTENT(IN) :: x_in, p_value
     INTEGER, INTENT(IN) :: nx, ny
     REAL(num), INTENT(IN) :: x(nx), y(ny), p_table(nx,ny)
+    CHARACTER(*), INTENT(IN), OPTIONAL :: caller_name
     INTEGER :: ix, index_lt, index_gt, i1, i2, im
     REAL(num) :: fx, fp, y_lt, y_gt, x_value, y_interp, xdif1, xdif2, xdifm
     LOGICAL, SAVE :: warning = .TRUE.
@@ -1339,6 +1357,9 @@ CONTAINS
         PRINT*,'*** WARNING ***'
         PRINT*,'Argument to "find_value_from_table" outside the range ', &
             'of the table.'
+        IF (PRESENT(caller_name)) THEN
+            PRINT*,'Called from function: ', TRIM(caller_name)
+        END IF
         PRINT*,'Using truncated value. No more warnings will be issued.'
         warning = .FALSE.
       END IF
@@ -1378,6 +1399,9 @@ CONTAINS
         PRINT*,'*** WARNING ***'
         PRINT*,'Argument to "find_value_from_table" outside the range ', &
             'of the table.'
+        IF (PRESENT(caller_name)) THEN
+            PRINT*,'Called from function: ', TRIM(caller_name)
+        END IF
         PRINT*,'Using truncated value. No more warnings will be issued.'
         warning = .FALSE.
       END IF
@@ -1416,6 +1440,9 @@ CONTAINS
         PRINT*,'*** WARNING ***'
         PRINT*,'Argument to "find_value_from_table" outside the range ', &
             'of the table.'
+        IF (PRESENT(caller_name)) THEN
+            PRINT*,'Called from function: ', TRIM(caller_name)
+        END IF
         PRINT*,'Using truncated value. No more warnings will be issued.'
         warning = .FALSE.
       END IF
