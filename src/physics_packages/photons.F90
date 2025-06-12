@@ -1153,6 +1153,7 @@ CONTAINS
         IF (PRESENT(caller_name)) THEN
             PRINT*,'Called from function: ', TRIM(caller_name)
         END IF
+        PRINT*,'The input x_in = ', x_in
         PRINT*,'Using truncated value. No more warnings will be issued.'
         warning = .FALSE.
       END IF
@@ -1213,6 +1214,7 @@ CONTAINS
         IF (PRESENT(caller_name)) THEN
             PRINT*,'Called from function: ', TRIM(caller_name)
         END IF
+        PRINT*,'x-scan The input x_in = ', x_in   ! 新增
         PRINT*,'Using truncated value. No more warnings will be issued.'
         warning = .FALSE.
       END IF
@@ -1255,6 +1257,7 @@ CONTAINS
         IF (PRESENT(caller_name)) THEN
             PRINT*,'Called from function: ', TRIM(caller_name)
         END IF
+        PRINT*,'p dir, index_lt. The input p_value = ', p_value
         PRINT*,'Using truncated value. No more warnings will be issued.'
         warning = .FALSE.
       END IF
@@ -1296,6 +1299,7 @@ CONTAINS
         IF (PRESENT(caller_name)) THEN
             PRINT*,'Called from function: ', TRIM(caller_name)
         END IF
+        PRINT*,'p dir, index_gt. The input p_value = ', p_value
         PRINT*,'Using truncated value. No more warnings will be issued.'
         warning = .FALSE.
       END IF
